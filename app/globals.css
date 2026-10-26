@@ -1,0 +1,7 @@
+:root{--bg:#FFF8F0;--fg:#111;--card:#fff;--line:#e5d9cc;--acc:#E71D24}
+.dark{--bg:#0A0A0A;--fg:#FFF8F0;--card:#161616;--line:#2a2a2a}
+body{background:var(--bg);color:var(--fg);margin:0;font-family:system-ui,sans-serif}
+article{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:8px;display:grid;gap:4px}
+button,select,input{background:var(--card);color:var(--fg);border:1px solid var(--line);border-radius:8px;padding:6px 10px}
+button[aria-pressed=true]{background:var(--acc);color:#fff;border-color:var(--acc)}
+main{padding:12px;max-width:1100px;margin:auto}
