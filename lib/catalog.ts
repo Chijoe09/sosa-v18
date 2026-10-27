@@ -1,7 +1,7 @@
 // SOSA COLLECTIONS v18 — 24 boxes, 6 items each. Photos: public/products/<slug>/1.jpg … 6.jpg
 export type Kind = 'shoe'|'cloth'|'jeansM'|'jeansF'|'belt'|'misc';
 export interface Box { slug:string; name:string; kind:Kind; noun:string; colours:string[]; sizes:string[]; parent?:string }
-export interface Item { id:string; box:string; name:string; colours:string[]; sizes:string[]; pricePi:number; images:string[] }
+export interface Item { id:string; box:string; name:string; colours:string[]; sizes:string[]; pricePi:number; stock:number; images:string[] }
 
 const CL=['M','L','XL','XXL','3XL'], SH=['37','38','39','40','41','42'], SHM=['40','41','42','43','44','45','46'];
 const BS=['32','34','36','38','40','42','44'];
@@ -36,19 +36,21 @@ export const BOXES: Box[] = [
  {slug:'female-jeans',name:'Female Jeans',kind:'jeansF',noun:'Jeans',colours:C('Black','Blue','Light Blue','White','Grey'),sizes:['28','30','32','34','36','38']},
  {slug:'face-cap',name:'Face Cap',kind:'misc',noun:'Face Cap',colours:C('Black','White','Brown','Dark Blue'),sizes:['One Size']},
  {slug:'handkerchief',name:'Handkerchief',kind:'misc',noun:'Handkerchief',colours:C('White','Blue','Gold','Red'),sizes:['One Size']},
+ {slug:'sport-kits',name:'Unisex Designers Sport Wears & Kits',kind:'cloth',noun:'Sport Kit',colours:C('Black','White','Blue','Red'),sizes:CL},
+ {slug:'sport-kits-men',name:'Sport Wears & Kits (For Men)',kind:'cloth',noun:'Men Sport Kit',colours:C('Black','White','Blue','Red'),sizes:CL,parent:'sport-kits'},
+ {slug:'sport-kits-female',name:'Sport Wears & Kits (For Female)',kind:'cloth',noun:'Female Sport Kit',colours:C('Black','White','Pink','Red'),sizes:CL,parent:'sport-kits'},
 ];
-// NOTE: 3 Ankara inner boxes sit under the parent; with 24 top-level boxes + 3 inner = 27 entries.
 
 const STYLES=['Classic','Royal','Lagos','Executive','Heritage','Signature'];
 const PRICES=[0.05,0.04,0.03,0.05,0.04,0.03];
 export const ITEMS_PER_BOX=6;
 
 export function seedItems(): Item[] {
-  return BOXES.flatMap(b => STYLES.slice(0,ITEMS_PER_BOX).map((s,i)=>({
+  return BOXES.filter(b=>!BOXES.some(x=>x.parent===b.slug)).flatMap(b => STYLES.slice(0,ITEMS_PER_BOX).map((s,i)=>({
     id:`${b.slug}-${i+1}`, box:b.slug, name:`${s} ${b.noun}`,
-    colours:b.colours, sizes:b.sizes, pricePi:PRICES[i],
+    colours:b.colours, sizes:b.sizes, pricePi:PRICES[i], stock:20,
     images:[`/products/${b.slug}/${i+1}.jpg`],
   })));
 }
 export const fmtPi=(n:number)=>`${n.toFixed(2)} π`;
-export const BUSINESS={legal:'SOPHISTICATED SAMPLES MERCHANDISE',brand:'SOSA COLLECTIONS',bn:'BN 2229053',crbn:'177764',reg:'27 Sept 2012',tm:'Trademark accepted, Class 18 (May 2017)',address:'No.1 Odiche Street, Coker, Lagos',phone:'+2348087259800'};
+export const BUSINESS={legal:'SOPHISTICATED SAMPLES MERCHANDISE',brand:'SOSA COLLECTIONS',bn:'BN 2229053',crbn:'177764',reg:'27 Sept 2012',tm:'Trademark accepted, Class 18 (May 2017)',address:'No. 1, ODICHE STREET, COKER Aguda, ORILE, LAGOS.',phone:'+2348087259800'};
