@@ -5,7 +5,8 @@ export default function AdminPage(){
     localStorage.setItem('sosa_admin','true');
     localStorage.setItem('sosa_admin_pw','sosa5463');
     sessionStorage.setItem('sosa-admin','sosa5463');
-    window.location.href='/?admin=1';
+    // Go to home, AdminRoom will auto-open
+    window.location.href='/';
   },[]);
   return <div style={{padding:100,textAlign:'center',background:'#111',color:'white',minHeight:'100vh'}}>Opening SOSA Admin...</div>;
 }
