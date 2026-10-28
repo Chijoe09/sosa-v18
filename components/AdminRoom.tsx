@@ -7,8 +7,31 @@ export default function AdminRoom(){
   const {ui,open,settings,products,boxes,reload}=useShop();
   const [pw,setPw]=useState('');const [ok,setOk]=useState(false);const [tab,setTab]=useState('settings');
   const [vals,setVals]=useState<any>({});const [orders,setOrders]=useState<any[]>([]);const [box,setBox]=useState(boxes[0].slug);const [note,setNote]=useState('');
+  
   useEffect(()=>{const p=sessionStorage.getItem('sosa-admin');if(p){setPw(p);setOk(true)}},[]);
   useEffect(()=>setVals(settings),[settings,ui.admin]);
+
+  // --- NEW AUTO-OPEN FOR /admin ROUTE ---
+  useEffect(()=>{
+    if(typeof window!=='undefined'){
+      const isAdminRoute = window.location.pathname.startsWith('/admin') || window.location.search.includes('admin');
+      const ls = localStorage.getItem('sosa_admin');
+      const ss = sessionStorage.getItem('sosa-admin');
+      if(isAdminRoute || ls==='true'){
+        open('admin', true);
+        if(ss){ setPw(ss); setOk(true); }
+        // If coming from /admin login, auto-use sosa5463
+        if(!ss && ls==='true'){
+          const savedPw = localStorage.getItem('sosa_admin_pw') || 'sosa5463';
+          setPw(savedPw);
+          sessionStorage.setItem('sosa-admin', savedPw);
+          setOk(true);
+        }
+      }
+    }
+  },[open]);
+  // --- END NEW ---
+
   if(!ui.admin)return null;
   const H=()=>({'Content-Type':'application/json','x-admin-password':pw});
   const api=async(body:any)=>{const r=await fetch('/api/admin',{method:'POST',headers:H(),body:JSON.stringify(body)}).then(r=>r.json());setNote(r.error||'Saved ✓');return r};
