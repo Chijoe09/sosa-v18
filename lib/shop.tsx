@@ -19,15 +19,22 @@ export function ShopProvider({children}:{children:React.ReactNode}){
   useEffect(()=>{if(ready)try{localStorage.setItem('sosa-cart-v1',JSON.stringify(cart))}catch{}},[cart,ready]);
   const find=(id:string)=>products.find(p=>p.id===id);
   const add=(id:string,size:string,color:string,qty=1)=>setCart(c=>{
-    const p=find(id);if(!p||p.stock<=0)return c;const row={id,size,color};const i=c.findIndex(r=>same(r,row));
-    if(i<0)return [...c,{...row,qty:Math.min(qty,p.stock)}];
-    return c.map((r,j)=>j===i?{...r,qty:Math.min(r.qty+qty,p.stock)}:r);});
-  const setQty=(row:any,d:number)=>setCart(c=>c.flatMap(r=>{if(!same(r,row))return [r];const p=find(r.id);const q=Math.min(r.qty+d,p?.stock??99);return q<1?[]:[{...r,qty:q}]}));
+    const p=find(id)||{id,stock:99,price:0.05,pricePi:0.05,colours:["Black"],sizes:["One Size"],name:"Product"};
+    const safeColor=color&&color!==""&&color!=="/"?color:(p.colours?.[0]||(p as any).colors?.[0]||"Black");
+    const safeSize=size&&size!==""&&size!=="/"?size:(p.sizes?.[0]||"One Size");
+    const row={id,size:safeSize,color:safeColor};
+    const i=c.findIndex(r=>same(r,row));
+    if(i<0)return [...c,{...row,qty:Math.max(1,qty)}];
+    return c.map((r,j)=>j===i?{...r,qty:r.qty+qty}:r);});
+  const setQty=(row:any,d:number)=>setCart(c=>c.flatMap(r=>{if(!same(r,row))return [r];const q=r.qty+d;return q<1?[]:[{...r,qty:q}]}));
   const remove=(row:any)=>setCart(c=>c.filter(r=>!same(r,row)));
   const clear=()=>setCart([]);
-  const lines=cart.map(r=>({...r,p:find(r.id)})).filter(l=>l.p);
+  const lines=cart.map(r=>{
+    const p=find(r.id)||{price:0.05,pricePi:0.05,name:r.id,stock:99};
+    return {...r,p:{...p,pricePi:p.pricePi||p.price||0.05,price:p.price||p.pricePi||0.05}};
+  });
   const count=lines.reduce((n,l)=>n+l.qty,0);
-  const subtotal=r7(lines.reduce((n,l)=>n+l.p.pricePi*l.qty,0));
+  const subtotal=r7(lines.reduce((n,l)=>n+(l.p.pricePi||l.p.price||0.05)*l.qty,0));
   const fee=delivery==='delivery'&&lines.length?Number(settings.deliveryFee):0;
   const total=r7(subtotal+fee);
   const open=(k:string,v=true)=>setUi(u=>({...u,[k]:v}));
